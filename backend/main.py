@@ -142,6 +142,49 @@ def get_expenses():
     consolidated_df = pd.concat(aligned_expenses, ignore_index=True)
     return consolidated_df.to_dict(orient="records")
 
+@app.get("/expenses/categories-summary")
+def get_expenses_categories_summary():
+    all_expenses = []
+    if not os.path.exists(DATA_DIR):
+        return []
+    for filename in os.listdir(DATA_DIR):
+        file_path = os.path.join(DATA_DIR, filename)
+        if filename.startswith("Movimientos Nacionales de Tarjeta de Crédito"):
+            df = process_tc_file(file_path)
+            df = df.rename(columns={"Detalle": "Descripción", "Monto $": "Monto"})
+        elif filename.startswith("Cartola"):
+            df = process_cc_file(file_path)
+        else:
+            continue
+        if not df.empty:
+            all_expenses.append(df)
+    if not all_expenses:
+        return []
+    unified_columns = ["Fecha", "Descripción", "Monto", "Categoria"]
+    aligned_expenses = []
+    for df in all_expenses:
+        df = df.loc[:, ~df.columns.duplicated()]
+        for col in unified_columns:
+            if col not in df.columns:
+                df[col] = None
+        df = df[unified_columns]
+        aligned_expenses.append(df)
+    consolidated_df = pd.concat(aligned_expenses, ignore_index=True)
+    # Group by 'Categoria', sum 'Monto', and calculate percentage
+    grouped = consolidated_df.groupby("Categoria", dropna=False)["Monto"].sum().reset_index()
+    total = grouped["Monto"].sum()
+    grouped["percentage"] = grouped["Monto"] / total * 100 if total else 0
+    # Prepare output
+    result = [
+        {
+            "category": row["Categoria"] if pd.notnull(row["Categoria"]) else "Sin categoría",
+            "amount": row["Monto"],
+            "percentage": round(row["percentage"], 2)
+        }
+        for _, row in grouped.iterrows()
+    ]
+    return result
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
