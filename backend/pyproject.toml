@@ -1,0 +1,10 @@
+[project]
+name = "expense-manager-backend"
+version = "0.1.0"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "pandas",
+    "openpyxl",
+]
