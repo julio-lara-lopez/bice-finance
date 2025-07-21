@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import CategoryPieChart from './CategoryPieChart';
 
 interface Expense {
   Fecha: string;
@@ -12,6 +13,7 @@ function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [message, setMessage] = useState<string>('');
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -38,6 +40,7 @@ function App() {
         const data = await response.json();
         setMessage(`File '${data.filename}' uploaded successfully.`);
         fetchExpenses(); // Refresh expenses after upload
+        setChartRefreshKey((k) => k + 1); // Refresh chart after upload
       } else {
         setMessage('File upload failed.');
       }
@@ -61,6 +64,7 @@ function App() {
 
   useEffect(() => {
     fetchExpenses();
+    setChartRefreshKey((k) => k + 1); // Refresh chart on initial load
   }, []);
 
   return (
@@ -72,6 +76,7 @@ function App() {
         <button onClick={fetchExpenses}>Refresh Expenses</button>
         {message && <p>{message}</p>}
       </header>
+      <CategoryPieChart refreshKey={chartRefreshKey} />
       <div className="expense-table">
         <h2>Expenses</h2>
         <table>
