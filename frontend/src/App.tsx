@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import CategoryPieChart from './CategoryPieChart';
+import CategoryPieChart from './components/CategoryPieChart';
 
 interface Expense {
   Fecha: string;
@@ -55,7 +55,14 @@ function App() {
       const response = await fetch('http://localhost:8000/expenses/');
       if (response.ok) {
         const data = await response.json();
-        setExpenses(data);
+        // Map backend fields to frontend expected fields
+        const mapped = data.map((item: any) => ({
+          Fecha: item.fecha,
+          Descripción: item.descripcion,
+          Monto: item.monto,
+          Categoria: item.categoria,
+        }));
+        setExpenses(mapped);
       }
     } catch (error) {
       console.error('Error fetching expenses:', error);
@@ -71,12 +78,18 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Expense Management App</h1>
-        <input type="file" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>
-        <button onClick={fetchExpenses}>Refresh Expenses</button>
-        {message && <p>{message}</p>}
       </header>
-      <CategoryPieChart refreshKey={chartRefreshKey} />
+      <div className="upload-section">
+        <input type="file" onChange={handleFileChange} />
+        <div>
+          <button onClick={handleUpload}>Upload</button>
+          <button onClick={fetchExpenses}>Refresh Expenses</button>
+        </div>
+        {message && <p>{message}</p>}
+      </div>
+      <div className="CategoryPieChart-container">
+        <CategoryPieChart refreshKey={chartRefreshKey} />
+      </div>
       <div className="expense-table">
         <h2>Expenses</h2>
         <table>

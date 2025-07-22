@@ -52,32 +52,42 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ refreshKey }) => {
   if (!data.length) return <div>No data available for pie chart.</div>;
 
   return (
-    <div style={{ width: '100%', maxWidth: 500, margin: '0 auto' }}>
-      <h2>Distribución de Gastos por Categoría</h2>
-      <ResponsiveContainer width="100%" height={350}>
-        <PieChart>
+    <div style={{ width: '100%', maxWidth: 600, margin: '0 auto', paddingTop: 32 }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Distribución de Gastos por Categoría</h2>
+      <ResponsiveContainer width="100%" height={420}>
+        <PieChart
+          width={520}
+          height={420}
+          margin={{ top: 80, right: 40, left: 40, bottom: 40 }}
+        >
           <Pie
             data={data}
             dataKey="amount"
             nameKey="category"
             cx="50%"
-            cy="50%"
-            outerRadius={120}
-            label={({ category, percentage }) => `${category}: ${percentage.toFixed(1)}%`}
+            cy="55%" // Move chart a bit down to avoid top clipping
+            outerRadius={140} // Slightly larger for better label spacing
+            labelLine={false}
+            label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(1)}%`}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip formatter={(value: any, name: any, props: any) => [`$${value}`, 'Monto']} />
-          <Legend formatter={(value, entry, index) => {
-            const item = data.find(d => d.category === value);
-            return `${value} (${item ? item.percentage.toFixed(1) : 0}%)`;
-          }} />
+          <Tooltip formatter={(value: any) => [`$${value}`, 'Monto']} />
+          <Legend
+            layout="vertical"
+            align="right"
+            verticalAlign="middle"
+            formatter={(value) => {
+              const item = data.find(d => d.category === value);
+              return `${value}: ${item ? item.percentage.toFixed(1) : 0}%`;
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-export default CategoryPieChart; 
+export default CategoryPieChart;
