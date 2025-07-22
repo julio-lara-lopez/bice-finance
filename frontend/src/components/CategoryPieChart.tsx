@@ -52,8 +52,8 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ refreshKey }) => {
   if (!data.length) return <div>No data available for pie chart.</div>;
 
   return (
-    <div style={{ width: '100%', maxWidth: 600, margin: '0 auto', paddingTop: 32 }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 24 }}>Distribución de Gastos por Categoría</h2>
+    <div style={{ width: '100%', maxWidth: 600, margin: '0 auto' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Distribución de Gastos por Categoría</h2>
       <ResponsiveContainer width="100%" height={420}>
         <PieChart
           width={520}
