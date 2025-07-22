@@ -7,4 +7,5 @@ dependencies = [
     "python-multipart",
     "pandas",
     "openpyxl",
+    "sqlalchemy>=2.0.41",
 ]
