@@ -48,7 +48,10 @@ async def upload_file(file: UploadFile = File(...), db: Session = Depends(get_db
     # Remove temp file
     import os
     os.remove(temp_path)
-    return {"rows_inserted": len(df)}
+    return {
+        "filename": file.filename,
+        "rows_inserted": len(df),
+    }
 
 @app.get("/expenses/", response_model=List[Expense])
 def get_expenses(db: Session = Depends(get_db)):
