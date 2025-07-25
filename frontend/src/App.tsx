@@ -38,7 +38,9 @@ function App() {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage(`File '${data.filename}' uploaded successfully.`);
+        setMessage(
+          `File '${data.filename}' uploaded successfully. Rows inserted: ${data.rows_inserted}.`
+        );
         fetchExpenses(); // Refresh expenses after upload
         setChartRefreshKey((k) => k + 1); // Refresh chart after upload
       } else {
